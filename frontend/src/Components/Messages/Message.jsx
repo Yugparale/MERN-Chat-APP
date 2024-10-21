@@ -1,39 +1,29 @@
+import { useRecoilState } from "recoil";
+import { useAuthContext } from "../../assets/context/contex";
+import { selectedConversationAtom } from "../../assets/store/messages";
+import {extractTime} from "../../utils/extractTime.js"
 
-const Message = () => {
+const Message = ({message}) => {
+  const {authUser}=useAuthContext();
+  const [selectedConversation,setSelectedConversation]=useRecoilState(selectedConversationAtom)
+  const fromMe= message.senderId===authUser._id;
+  const chatClassname=fromMe ? 'chat-end' : 'chat-start'
+	const profilePic = fromMe ? authUser.profilePic : selectedConversation?.profilePic;
+  const bubblecolor =fromMe ? 'bg-purp' : "";
+  const name=fromMe ? authUser.username :selectedConversation?.username;
+  const time=extractTime(message.createdAt)
+  
   return (
-  <>
-      <div className="chat chat-start">
-  <div className="chat-image avatar">
-    <div className="w-10 rounded-full">
-      <img
-        alt="Tailwind CSS chat bubble component"
-        src="https://external-preview.redd.it/anime-girl-wallpaper-4k-best-purple-wallpaper-v0-c2R4ZzMxejg0dXZjMTkzlWbfz3ccF2si-SnE3tJvXXr2koBsiq70Ns-foAoP.png?format=pjpg&auto=webp&s=b3223277d956b86f9b6a2950c6153683ca30ef23" />
-    </div>
-  </div>
-  <div className="chat-header">
-    JID
-    <time className="text-xs opacity-50">12:45</time>
-  </div>
-  <div className="chat-bubble">You were the Chosen One!</div>
-  <div className="chat-footer opacity-50">Delivered</div>
-</div>
-<div className="chat chat-end">
-  <div className="chat-image avatar">
-    <div className="w-10 rounded-full">
-      <img
-        alt="Tailwind CSS chat bubble component"
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFgCEtYFqOefNPaoJeJAe9f0MW2jdbkUDeZA&s" />
-    </div>
-  </div>
-  <div className="chat-header">
-    21 Savage
-    <time className="text-xs opacity-50">12:46</time>
-  </div>
-  <div className="chat-bubble">I hate you!</div>
-  <div className="chat-footer opacity-50">Seen at 12:46</div>
-</div>
-</>
-  )
+		<div className={`chat ${chatClassname}`}>
+			<div className='chat-image avatar'>
+				<div className='w-10 rounded-full'>
+					<img alt='Tailwind CSS chat bubble component' src={profilePic} />
+				</div>
+			</div>
+      <div className={`chat-bubble text-white ${bubblecolor} pb-2`}>{message.message}</div>
+      <div className="chat-footer opacity-50 text-xs flex gap-1 items-center">{time}</div>
+		</div>
+	); 
 }
 
 export default Message
